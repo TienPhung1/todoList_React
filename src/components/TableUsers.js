@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import ModalAddNew from "./ModalAddNew";
-import _ from "lodash";
+import _, { debounce } from "lodash";
 import { fetchAllUser } from "../services/UserService";
 
 import ReactPaginate from "react-paginate";
@@ -19,6 +19,8 @@ const TableUsers = () => {
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
   const [sortField, setSortField] = useState("id");
+
+  const [keyWords, setKeyWords] = useState("");
 
   useEffect(() => {
     //call APIs
@@ -81,6 +83,17 @@ const TableUsers = () => {
     setListUsers(cloneListUser);
   };
 
+  const handleSearch = debounce((e) => {
+    let term = e.target.value;
+    if (term) {
+      let cloneListUser = _.cloneDeep(listUsers);
+      cloneListUser = cloneListUser.filter((item) => item.email.includes(term));
+      setListUsers(cloneListUser);
+    } else {
+      getUsers(1);
+    }
+  }, 2000);
+
   return (
     <div>
       <div className="my-3 add-new">
@@ -94,6 +107,17 @@ const TableUsers = () => {
           Add New Todo
         </button>
       </div>
+
+      <div className="my-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search..."
+          value={keyWords}
+          onChange={(e) => handleSearch(e)}
+        />
+      </div>
+
       <Table striped bordered hover>
         <thead>
           <tr>
