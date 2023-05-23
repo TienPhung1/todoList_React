@@ -7,7 +7,9 @@ import { fetchAllUser } from "../services/UserService";
 import ReactPaginate from "react-paginate";
 import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalConfirm";
+import { CSVLink, CSVDownload } from "react-csv";
 import "./TableUser.scss";
+
 const TableUsers = () => {
   const [listUsers, setListUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -21,6 +23,7 @@ const TableUsers = () => {
   const [sortField, setSortField] = useState("id");
 
   const [keyWords, setKeyWords] = useState("");
+  const [dataExport, setDataExport] = useState([]);
 
   useEffect(() => {
     //call APIs
@@ -94,12 +97,45 @@ const TableUsers = () => {
     }
   }, 2000);
 
+  const getUsersExport = (event, done) => {
+    let result = [];
+    if (listUsers && listUsers.length > 0) {
+      result.push(["Id", "Email", "First Name", "Last Name"]);
+      listUsers.map((item, index) => {
+        let arr = [];
+        arr[0] = item.id;
+        arr[1] = item.email;
+        arr[2] = item.first_name;
+        arr[3] = item.last_name;
+        result.push(arr);
+      });
+      setDataExport(result);
+      done();
+    }
+  };
   return (
     <div>
       <div className="my-3 add-new">
         <span>
           <b>list Users:</b>
         </span>
+
+        <div className="group-btn">
+          <label htmlFor="\" className="btn btn-primary">
+            Import
+          </label>
+          <input id="test" type="file" hidden />
+
+          <CSVLink
+            data={dataExport}
+            filename={"user.csv"}
+            className="btn btn-primary"
+            onClick={getUsersExport}
+            asyncOnClick={true}
+          >
+            Export
+          </CSVLink>
+        </div>
         <button
           className="btn btn-primary"
           onClick={() => setIsShowModalAddNew(true)}
