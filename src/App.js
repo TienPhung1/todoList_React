@@ -3,6 +3,8 @@ import Header from "./components/Header";
 import TableUsers from "./components/TableUsers";
 import Container from "react-bootstrap/Container";
 import { ToastContainer } from "react-toastify";
+import Home from "./components/Home";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
@@ -12,6 +14,12 @@ function App() {
 
         <Container>
           <TableUsers />
+          {/* <Home /> */}
+          <Routes>
+            <Route path="/" element={<Home />}>
+              <Route path="/users" element={<TableUsers />} />
+            </Route>
+          </Routes>
         </Container>
       </div>
 
